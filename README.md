@@ -6,7 +6,7 @@ The Heart Disease Prediction System is a desktop-based machine learning applicat
 
 This application demonstrates how machine learning models can be integrated into a practical healthcare tool to support early risk detection.
 
-📌 Project Overview
+Project Overview
 
 Cardiovascular diseases are one of the leading causes of death worldwide. Early prediction and diagnosis play a critical role in reducing risk and improving patient outcomes.
 
@@ -14,7 +14,7 @@ This system uses a trained K-Nearest Neighbors (KNN) classification model to ana
 
 Users input medical parameters through a graphical interface, and the system processes the data, applies the trained model, and provides an instant prediction result.
 
-🧠 How the System Works
+How the System Works
 
 The application follows a complete machine learning workflow:
 
@@ -78,7 +78,7 @@ Normal Heart Condition
 
 The output is visually distinguished using color indicators for clarity.
 
-⚙️ Technologies Used
+Technologies Used
 
 Python
 
