@@ -1,5 +1,7 @@
+
 import numpy as np
 import pandas as pd
+from pathlib import Path
 
 #Model
 from sklearn.neighbors import KNeighborsClassifier
@@ -9,9 +11,11 @@ from sklearn.metrics import precision_score, accuracy_score
 
 #GUI
 import tkinter as tk
+from tkinter import messagebox
 
 #Loading Dataset
-df = pd.read_csv("heart.csv")
+DATA_PATH = Path(__file__).resolve().parent / "heart.csv"
+df = pd.read_csv(DATA_PATH)
 
 #Data Preprocessing
 categorical_val = []
@@ -32,11 +36,13 @@ dfs[col_to_scale] = sc.fit_transform(dfs[col_to_scale])
 #Model Building
 X=dfs.drop("target",axis=1)
 Y=dfs["target"]
+X_values = X.to_numpy()
+Y_values = Y.to_numpy()
 
 np.random.seed(42)
 
 knn = KNeighborsClassifier(n_neighbors=10)
-knn.fit(X, Y)
+knn.fit(X_values, Y_values)
 
 #GUI Model
 root = tk.Tk()
@@ -60,54 +66,61 @@ thal_var = tk.IntVar()
 
 # Function to predict heart disease
 def predict():
-    # Get the user inputs
-    age = age_var.get()
-    sex = sex_var.get()
-    cp = cp_var.get()
-    trestbps = trestbps_var.get()
-    chol = chol_var.get()
-    fbs = fbs_var.get()
-    restecg = restecg_var.get()
-    thalach = thalach_var.get()
-    exang = exang_var.get()
-    oldpeak = oldpeak_var.get()
-    slope = slope_var.get()
-    ca = ca_var.get()
-    thal = thal_var.get()
+    try:
+        # Get the user inputs
+        age = age_var.get()
+        sex = sex_var.get()
+        cp = cp_var.get()
+        trestbps = trestbps_var.get()
+        chol = chol_var.get()
+        fbs = fbs_var.get()
+        restecg = restecg_var.get()
+        thalach = thalach_var.get()
+        exang = exang_var.get()
+        oldpeak = oldpeak_var.get()
+        slope = slope_var.get()
+        ca = ca_var.get()
+        thal = thal_var.get()
 
-    # Preprocess the input data
-    input_data = pd.DataFrame({
-        'age': [age],
-        'sex': [sex],
-        'cp': [cp],
-        'trestbps': [trestbps],
-        'chol': [chol],
-        'fbs': [fbs],
-        'restecg': [restecg],
-        'thalach': [thalach],
-        'exang': [exang],
-        'oldpeak': [oldpeak],
-        'slope': [slope],
-        'ca': [ca],
-        'thal': [thal]
-    })
+        # Preprocess the input data
+        input_data = pd.DataFrame({
+            'age': [age],
+            'sex': [sex],
+            'cp': [cp],
+            'trestbps': [trestbps],
+            'chol': [chol],
+            'fbs': [fbs],
+            'restecg': [restecg],
+            'thalach': [thalach],
+            'exang': [exang],
+            'oldpeak': [oldpeak],
+            'slope': [slope],
+            'ca': [ca],
+            'thal': [thal]
+        })
 
-    input_data = pd.get_dummies(input_data).reindex(columns=X.columns, fill_value=0)
+        input_data = pd.get_dummies(input_data).reindex(columns=X.columns, fill_value=0)
 
-    # Scale the input data
-    input_data[col_to_scale] = sc.transform(input_data[col_to_scale])
+        # Scale the input data
+        input_data[col_to_scale] = sc.transform(input_data[col_to_scale])
 
-    # Convert input_data to a NumPy array for prediction
-    input_array = input_data.to_numpy()
+        # Predict heart disease
+        prediction = knn.predict(input_data.to_numpy())[0]
 
-    # Predict heart disease
-    prediction = knn.predict(input_array)
+        # Display the result in UI and terminal
+        if prediction == 1:
+            result_text = "Prediction: Heart Disease"
+            result_color = "red"
+        else:
+            result_text = "Prediction: Normal Heart"
+            result_color = "green"
 
-    # Display the result
-    if prediction == 1:
-        result_label.config(text="Prediction: Heart Disease", fg="red")
-    else:
-        result_label.config(text="Prediction: Normal Heart", fg="green")
+        result_label.config(text=result_text, fg=result_color)
+        print(result_text)
+        messagebox.showinfo("Prediction Result", result_text)
+    except Exception as exc:
+        result_label.config(text=f"Error: {exc}", fg="orange red")
+        messagebox.showerror("Prediction Error", str(exc))
         
 
 # GUI elements
@@ -178,10 +191,10 @@ thal_entry.pack()
 # Add other input fields (e.g., sex, cp, trestbps, etc.) similarly...
 
 predict_button = tk.Button(root, text="Predict", command=predict)
-predict_button.pack()
+predict_button.pack(pady=10)
 
 result_label = tk.Label(root, text="", font=("Arial Black", 15))
-result_label.pack()
+result_label.pack(pady=10)
 
 
 # Run the GUI event loop
